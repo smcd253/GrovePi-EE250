@@ -8,6 +8,11 @@ import time
 import grovepi
 from grovepi import *
 
+
+# define grovepi vars
+ultrasonic_ranger = 4
+LED = 3
+
 def on_connect(client, userdata, flags, rc):
     print("Connected to server (i.e., broker) with result code "+str(rc))
 
@@ -15,6 +20,8 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("anrg-pi9/defaultCallback")
     client.subscribe("anrg-pi9/ultrasonic")
     client.message_callback_add("anrg-pi9/ultrasonic", ultrasonic)
+    client.subscribe("anrg-pi9/led")
+    client.message_callback_add("anrg-pi9/led", led)
 
 #Default message callback. Please use custom callbacks.
 def on_message(client, userdata, msg):
@@ -24,11 +31,17 @@ def ultrasonic(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message 
     print("ultrasonic: " + message.topic + " " + "\"" + 
         str(message.payload, "utf-8") + "\"")
-    print("ultrasonic: message.payload is of type " + 
-          str(type(message.payload)))
 
-# define ultrasonic ranger port
-ultrasonic_ranger = 4
+#Custom callbacks need to be structured with three args like on_message()
+def led(client, userdata, message):
+    #the third argument is 'message' here unlike 'msg' in on_message 
+    data = str(message.payload, "utf-8")
+    if (data == "LED_ON")
+        digitalWrite(LED, 1)
+    elif (data == "LED_OFF")
+        digitalWrite(LED, 0)
+
+
 
 if __name__ == '__main__':
     #this section is covered in publisher_and_subscriber_example.py

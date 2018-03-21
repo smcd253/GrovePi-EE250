@@ -10,10 +10,19 @@ def on_connect(client, userdata, flags, rc):
     print("Connected to server (i.e., broker) with result code "+str(rc))
 
     #subscribe to topics of interest here
+    client.subscribe("anrg-pi9/defaultCallback")
+    client.subscribe("anrg-pi9/led")
+    client.message_callback_add("anrg-pi9/led", led)
 
 #Default message callback. Please use custom callbacks.
 def on_message(client, userdata, msg):
     print("on_message: " + msg.topic + " " + str(msg.payload, "utf-8"))
+
+#Custom callbacks need to be structured with three args like on_message()
+def led(client, userdata, message):
+    #the third argument is 'message' here unlike 'msg' in on_message 
+    print("led: " + message.topic + " " + "\"" + 
+        str(message.payload, "utf-8") + "\"")
 
 def on_press(key):
     try: 
@@ -28,6 +37,7 @@ def on_press(key):
         print("a")
         # send "a" character to rpi
         #send "LED_ON"
+        client.publish("anrg-pi9/led", "LED_ON")
     elif k == 's':
         print("s")
         # send "s" character to rpi
@@ -35,6 +45,8 @@ def on_press(key):
         print("d")
         # send "d" character to rpi
         # send "LED_OFF"
+        client.publish("anrg-pi9/led", "LED_OFF")
+
 
 if __name__ == '__main__':
     #setup the keyboard event listener
