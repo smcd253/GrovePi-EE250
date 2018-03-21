@@ -50,9 +50,7 @@ if __name__ == '__main__':
         except IOError:
             data = "IOError"
 
-        
-
-
+        client.publish("anrg-pi9/ultrasonic", data)
 
         time.sleep(1)
             
