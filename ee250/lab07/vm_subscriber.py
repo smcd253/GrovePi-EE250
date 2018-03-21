@@ -13,6 +13,8 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("anrg-pi9/defaultCallback")
     client.subscribe("anrg-pi9/ultrasonic")
     client.message_callback_add("anrg-pi9/ultrasonic", ultrasonic)
+    client.subscribe("anrg-pi9/button")
+    client.message_callback_add("anrg-pi9/button", button)
 
 #Default message callback. Please use custom callbacks.
 def on_message(client, userdata, msg):
@@ -23,9 +25,10 @@ def ultrasonic(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message 
     print("ultrasonic: " + message.topic + " " + "\"" + 
         str(message.payload, "utf-8") + "\"")
-    # print("ultrasonic: message.payload is of type " + 
-    #       str(type(message.payload)))
 
+def button(client, userdata, message):
+    print(str(message.payload, "utf-8"))
+    
 if __name__ == '__main__':
     #this section is covered in publisher_and_subscriber_example.py
     client = mqtt.Client()

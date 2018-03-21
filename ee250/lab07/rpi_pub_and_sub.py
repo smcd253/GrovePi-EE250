@@ -12,6 +12,10 @@ from grovepi import *
 # define grovepi vars
 ultrasonic_ranger = 4
 LED = 3
+button = 2
+pinMode(ultrasonic_ranger, "OUTPUT")
+pinMode(LED, "OUTPUT")
+pinMode(button,"INPUT")
 
 def on_connect(client, userdata, flags, rc):
     print("Connected to server (i.e., broker) with result code "+str(rc))
@@ -22,6 +26,10 @@ def on_connect(client, userdata, flags, rc):
     client.message_callback_add("anrg-pi9/ultrasonic", ultrasonic)
     client.subscribe("anrg-pi9/led")
     client.message_callback_add("anrg-pi9/led", led)
+    client.subscribe("anrg-pi9/button")
+    client.message_callback_add("anrg-pi9/button", button)
+    client.subscribe("anrg-pi9/lcd")
+    client.message_callback_add("anrg-pi9/lcd", lcd)
 
 #Default message callback. Please use custom callbacks.
 def on_message(client, userdata, msg):
@@ -41,7 +49,11 @@ def led(client, userdata, message):
     elif (data == "LED_OFF"):
         digitalWrite(LED, 0)
 
+def button(client, userdata, message):
+    #do nothing?
 
+def lcd(client, userdata, message):
+    print("From VM: " + str(message.payload, "utf-8"))
 
 if __name__ == '__main__':
     #this section is covered in publisher_and_subscriber_example.py
@@ -52,7 +64,7 @@ if __name__ == '__main__':
     client.loop_start()
 
     while True:
-        ################ PUBLISH ###############
+        ################ ULTRASONIC RANGER ###############
         try:
             # Read distance value from Ultrasonic
             dist = grovepi.ultrasonicRead(ultrasonic_ranger)
@@ -64,6 +76,15 @@ if __name__ == '__main__':
             data = "IOError"
 
         client.publish("anrg-pi9/ultrasonic", data)
+
+        ################ BUTTON ###############
+        try:
+            button_status = digitalRead(button)	#Read the Button status
+            if button_status:
+                client.publish("anrg-pi9/button", "Button Pressed!")									
+        except (IOError,TypeError) as e:
+            client.publish("anrg-pi9/button", "Button ERROR")
+
 
         time.sleep(1)
             

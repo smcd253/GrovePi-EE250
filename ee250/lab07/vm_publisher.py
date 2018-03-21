@@ -13,6 +13,8 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("anrg-pi9/defaultCallback")
     client.subscribe("anrg-pi9/led")
     client.message_callback_add("anrg-pi9/led", led)
+    client.subscribe("anrg-pi9/lcd")
+    client.message_callback_add("anrg-pi9/lcd", lcd)
 
 #Default message callback. Please use custom callbacks.
 def on_message(client, userdata, msg):
@@ -33,20 +35,26 @@ def on_press(key):
     if k == 'w':
         print("w")
         #send "w" character to rpi
+        client.publish("anrg-pi9/lcd", "w")
     elif k == 'a':
         print("a")
         # send "a" character to rpi
+        client.publish("anrg-pi9/lcd", "a")        
         #send "LED_ON"
         client.publish("anrg-pi9/led", "LED_ON")
     elif k == 's':
         print("s")
         # send "s" character to rpi
+        client.publish("anrg-pi9/lcd", "s")
     elif k == 'd':
         print("d")
         # send "d" character to rpi
+        client.publish("anrg-pi9/lcd", "d")        
         # send "LED_OFF"
         client.publish("anrg-pi9/led", "LED_OFF")
 
+def lcd(client, userdata, message):
+    #do nothing?
 
 if __name__ == '__main__':
     #setup the keyboard event listener
@@ -61,7 +69,6 @@ if __name__ == '__main__':
     client.loop_start()
 
     while True:
-        print("delete this line")
         time.sleep(1)
             
 
