@@ -36,9 +36,9 @@ def ultrasonic(client, userdata, message):
 def led(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message 
     data = str(message.payload, "utf-8")
-    if (data == "LED_ON")
+    if (data == "LED_ON"):
         digitalWrite(LED, 1)
-    elif (data == "LED_OFF")
+    elif (data == "LED_OFF"):
         digitalWrite(LED, 0)
 
 
