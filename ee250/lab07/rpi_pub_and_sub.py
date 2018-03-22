@@ -7,7 +7,7 @@ import time
 
 import grovepi
 from grovepi import *
-
+from grove_rgb_lcd import *
 
 # define grovepi vars
 ultrasonic_ranger = 4
@@ -53,7 +53,10 @@ def button(client, userdata, message):
     #do nothing?
 
 def lcd(client, userdata, message):
-    print("From VM: " + str(message.payload, "utf-8"))
+    data = str(message.payload, "utf-8")
+    print("From VM: " + data)
+    setRGB(1,1,1)   # parse our list into the color settings
+    setText("From VM: " + data) # update the RGB LCD display
 
 if __name__ == '__main__':
     #this section is covered in publisher_and_subscriber_example.py
