@@ -92,12 +92,7 @@ if __name__ == '__main__':
             if button_status:
                 client.publish("anrg-pi9/button", "Button Pressed!")									
         except (IOError,TypeError) as e:
-            client.publish("anrg-pi9/button", "Button ERROR")
-
-        # button_status = digitalRead(button) #Read the Button status
-        # if button_status:
-        #     client.publish("anrg-pi9/button", "Button Pressed!")
-        client.publish("anrg-pi9/button", "Button Pressed!")                                    
+            client.publish("anrg-pi9/button", "Button ERROR")                                    
 
         time.sleep(1)
             
