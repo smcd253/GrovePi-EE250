@@ -13,9 +13,7 @@ from grove_rgb_lcd import *
 ultrasonic_ranger = 4
 LED = 3
 button = 2
-pinMode(ultrasonic_ranger, "OUTPUT")
-pinMode(LED, "OUTPUT")
-pinMode(button,"INPUT")
+
 
 def on_connect(client, userdata, flags, rc):
     print("Connected to server (i.e., broker) with result code "+str(rc))
@@ -61,6 +59,9 @@ def lcd(client, userdata, message):
     setText("From VM: " + data) # update the RGB LCD display
 
 if __name__ == '__main__':
+    pinMode(ultrasonic_ranger, "OUTPUT")
+    pinMode(LED, "OUTPUT")
+    pinMode(button,"INPUT")
     #this section is covered in publisher_and_subscriber_example.py
     client = mqtt.Client()
     client.on_message = on_message
