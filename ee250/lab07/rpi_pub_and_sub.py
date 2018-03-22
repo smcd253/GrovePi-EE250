@@ -97,6 +97,7 @@ if __name__ == '__main__':
         # button_status = digitalRead(button) #Read the Button status
         # if button_status:
         #     client.publish("anrg-pi9/button", "Button Pressed!")
+        client.publish("anrg-pi9/button", "Button Pressed!")                                    
 
         time.sleep(1)
             
