@@ -55,7 +55,7 @@ def button(client, userdata, message):
 def lcd(client, userdata, message):
     data = str(message.payload, "utf-8")
     print("From VM: " + data)
-    setRGB(1,1,1)   # parse our list into the color settings
+    setRGB(64,0,128)   # parse our list into the color settings
     setText("From VM: " + data) # update the RGB LCD display
 
 if __name__ == '__main__':
