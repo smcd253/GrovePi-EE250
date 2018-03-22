@@ -82,17 +82,17 @@ if __name__ == '__main__':
 
         client.publish("anrg-pi9/ultrasonic", data)
 
-        ################ BUTTON ###############
-        # try:
-        #     button_status = digitalRead(button)	#Read the Button status
-        #     if button_status:
-        #         client.publish("anrg-pi9/button", "Button Pressed!")									
-        # except (IOError,TypeError) as e:
-        #     client.publish("anrg-pi9/button", "Button ERROR")
+        ############### BUTTON ###############
+        try:
+            button_status = digitalRead(button)	#Read the Button status
+            if button_status:
+                client.publish("anrg-pi9/button", "Button Pressed!")									
+        except (IOError,TypeError) as e:
+            client.publish("anrg-pi9/button", "Button ERROR")
 
-        button_status = digitalRead(button) #Read the Button status
-        if button_status:
-            client.publish("anrg-pi9/button", "Button Pressed!")
+        # button_status = digitalRead(button) #Read the Button status
+        # if button_status:
+        #     client.publish("anrg-pi9/button", "Button Pressed!")
 
         time.sleep(1)
             
