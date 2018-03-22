@@ -50,6 +50,8 @@ def led(client, userdata, message):
         digitalWrite(LED, 0)
 
 def button(client, userdata, message):
+    data = str(message.payload, "utf-8")
+    print("Button Status: " + data)
     #do nothing?
 
 def lcd(client, userdata, message):

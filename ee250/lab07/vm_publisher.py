@@ -54,7 +54,8 @@ def on_press(key):
         client.publish("anrg-pi9/led", "LED_OFF")
 
 def lcd(client, userdata, message):
-    #do nothing?
+    data = str(message.payload, "utf-8")
+    print("From VM: " + data)
 
 if __name__ == '__main__':
     #setup the keyboard event listener
