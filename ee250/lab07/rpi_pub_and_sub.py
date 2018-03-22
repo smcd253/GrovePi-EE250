@@ -59,6 +59,9 @@ def lcd(client, userdata, message):
     setText("From VM: " + data) # update the RGB LCD display
 
 if __name__ == '__main__':
+    ultrasonic_ranger = 4
+    LED = 3
+    button = 2
     pinMode(ultrasonic_ranger, "OUTPUT")
     pinMode(LED, "OUTPUT")
     pinMode(button,"INPUT")
