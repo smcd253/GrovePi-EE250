@@ -12,7 +12,7 @@ from grove_rgb_lcd import *
 # define grovepi vars
 ultrasonic_ranger = 4
 LED = 3
-button = 2
+button_port = 2
 
 
 def on_connect(client, userdata, flags, rc):
@@ -61,10 +61,10 @@ def lcd(client, userdata, message):
 if __name__ == '__main__':
     ultrasonic_ranger = 4
     LED = 3
-    button = 2
+    button_port = 2
     pinMode(ultrasonic_ranger, "OUTPUT")
     pinMode(LED, "OUTPUT")
-    pinMode(button,"INPUT")
+    pinMode(button_port,"INPUT")
     #this section is covered in publisher_and_subscriber_example.py
     client = mqtt.Client()
     client.on_message = on_message
