@@ -47,6 +47,10 @@ if __name__ == '__main__':
     client.connect(broker_hostname, broker_port, 60)
     client.loop_start()
 
+    # moving average buffers
+    ranger1_movAvg = []
+    ranger2_movAvg = []
+
     while True:
         """ You have two lists, ranger1_dist and ranger2_dist, which hold a window
         of the past MAX_LIST_LENGTH samples published by ultrasonic ranger 1
@@ -57,7 +61,8 @@ if __name__ == '__main__':
         ~125cm. """
         
         # TODO: detect movement and/or position
-        
+        # build moving average lists
+
         print("ranger1: " + str(ranger1_dist[-1:]) + ", ranger2: " + 
             str(ranger2_dist[-1:])) 
         
