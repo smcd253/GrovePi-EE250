@@ -39,6 +39,81 @@ def on_connect(client, userdata, flags, rc):
 def on_message(client, userdata, msg): 
     print(msg.topic + " " + str(msg.payload))
 
+
+########################## SIGNAL PROCESSING ############################
+MAX_BUF_LEN = 10
+ranger1_movAvg = []
+ranger2_movAvg = []
+
+def smoother1():
+    global ranger1_movAvg
+    tot = 0
+    for val in ranger1_dist[-MAX_BUF_LEN:]:
+        tot += int(val)
+    avg = tot/MAX_BUF_LEN
+
+    ranger1_movAvg.append(avg)
+
+    #truncate list to only have the last MAX_BUF_LEN values
+    ranger1_movAvg = ranger1_movAvg[-MAX_BUF_LEN:]
+
+def smoother2():
+    global ranger2_movAvg
+    tot = 0
+    for val in ranger2_dist[-MAX_BUF_LEN:]:
+        tot += int(val)
+    avg = tot/MAX_BUF_LEN
+    
+    ranger2_movAvg.append(avg)
+
+    #truncate list to only have the last MAX_BUF_LEN values
+    ranger2_movAvg = ranger2_movAvg[-MAX_BUF_LEN:]
+
+ranger1_deltas = []
+ranger2_deltas = []
+
+# takes last two values in each moving average array and creates an array of 
+# differences between each value (so for 20 movAvg values, we get 10 delta values)
+# may change this and have function only return the two transient deltas
+def delta():
+    global ranger1_deltas
+    global ranger2_deltas
+
+    deltas_1 = ranger1_movAvg[-2:]
+    delta1 = int(deltas_1[0]) - int(deltas_1[-1])
+
+    deltas_2 = ranger2_movAvg[-2:]
+    delta2 = int(deltas_2[0]) - int(deltas_2[-1])
+
+    ranger1_deltas.append(delta1)
+    ranger1_deltas = ranger1_deltas[-MAX_BUF_LEN:]
+    ranger2_deltas.append(delta2)
+    ranger2_deltas = ranger2_deltas[-MAX_BUF_LEN:]
+
+def stateMachine():
+    # buffers for sensor error
+    distance_buf = 10
+    # grab last elements and cast to integers
+    dump_list = (ranger1_deltas[-1:] + ranger2_deltas[-1:] + 
+                ranger1_movAvg[-1:] + ranger2_movAvg[-1:])
+    delta1 = int(dump_list[0])
+    delta2 = int(dump_list[1])
+    ranger1 = int(dump_list[2])
+    ranger2 = int(dump_list[3])
+    
+    #STILL CONDITION
+    if ((delta1 is 0) and (delta2 is 0)):
+        # IF STILL AND LEFT
+        if(ranger2 > ranger1 + distance_buf):
+            print("Motion: STILL, Position: LEFT")
+        # IF STILL AND RIGHT
+        elif(ranger2 + distance_buf < ranger1):
+            print("Motion: STILL, Position: LEFT")
+        else:
+            print("Motion: STILL, Position: MIDDLE")
+    # elif((delta1 is 0) and (delta2 is 0)):
+
+
 if __name__ == '__main__':
     # Connect to broker and start loop    
     client = mqtt.Client()
@@ -46,6 +121,7 @@ if __name__ == '__main__':
     client.on_message = on_message
     client.connect(broker_hostname, broker_port, 60)
     client.loop_start()
+
 
     while True:
         """ You have two lists, ranger1_dist and ranger2_dist, which hold a window
@@ -55,10 +131,21 @@ if __name__ == '__main__':
         distances in centimeters to the closest object. Expect values between 
         0 and 512. However, these rangers do not detect people well beyond 
         ~125cm. """
-        
+
+        # print("ranger1: " + str(ranger1_dist[-1:]) + ", ranger2: " + 
+            # str(ranger2_dist[-1:])) 
+
         # TODO: detect movement and/or position
-        
-        print("ranger1: " + str(ranger1_dist[-1:]) + ", ranger2: " + 
-            str(ranger2_dist[-1:])) 
+        # moving average
+        smoother1()
+        smoother2()
+        #print("ranger1: " + str(ranger1_movAvg[-1:]) + " | ranger2: " + str(ranger2_movAvg[-1:]))
+
+        delta()
+        # print(ranger1_deltas)
+        # print(ranger2_deltas)
+
+        stateMachine()
+
         
         time.sleep(0.2)
