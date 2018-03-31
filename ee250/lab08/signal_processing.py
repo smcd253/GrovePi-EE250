@@ -122,6 +122,12 @@ if __name__ == '__main__':
     client.connect(broker_hostname, broker_port, 60)
     client.loop_start()
 
+<<<<<<< HEAD
+=======
+    # moving average buffers
+    ranger1_movAvg = []
+    ranger2_movAvg = []
+>>>>>>> d028523ef13935c3f519dcf43ca00a8e2a9baf4c
 
     while True:
         """ You have two lists, ranger1_dist and ranger2_dist, which hold a window
@@ -136,6 +142,7 @@ if __name__ == '__main__':
             # str(ranger2_dist[-1:])) 
 
         # TODO: detect movement and/or position
+<<<<<<< HEAD
         # moving average
         smoother1()
         smoother2()
@@ -147,5 +154,11 @@ if __name__ == '__main__':
 
         stateMachine()
 
+=======
+        # build moving average lists
+
+        print("ranger1: " + str(ranger1_dist[-1:]) + ", ranger2: " + 
+            str(ranger2_dist[-1:])) 
+>>>>>>> d028523ef13935c3f519dcf43ca00a8e2a9baf4c
         
         time.sleep(0.2)

@@ -7,7 +7,7 @@ ranger.
 """
 
 # set to 1 to run test mode (i.e. running without an raspberry pi)
-TEST = 0
+TEST = 1
 
 import paho.mqtt.client as mqtt
 import argparse
