@@ -5,6 +5,9 @@ import json
 from datetime import datetime
 import time
 
+#!!!!!!!!!!!!!!!!NOTE!!!!!!!!!!!!!!!!!!#
+#THIS SCRIPT CANNOT BE RUN UNLESS flask_server.py IS RUNNING ON ANOTHER TERMINAL
+
 ############################## HTTP #################################
 # This header sets the HTTP request's mimetype to `application/json`. This
 # means the payload of the HTTP message will be formatted as a json ojbect
@@ -193,6 +196,8 @@ def stateMachine():
             response = requests.post("http://0.0.0.0:5000/post-event", headers = hdr,
                                  data = json.dumps(pload_mvRight))
 
+#!!!!!!!!!!!!!!!!NOTE!!!!!!!!!!!!!!!!!!#
+#THIS SCRIPT CANNOT BE RUN UNLESS flask_server.py IS RUNNING ON ANOTHER TERMINAL
 
 if __name__ == '__main__':
     # Connect to broker and start loop    
