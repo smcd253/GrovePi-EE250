@@ -1,19 +1,5 @@
 import paho.mqtt.client as mqtt
 import time
-import requests
-import json
-from datetime import datetime
-import time
-
-############################## HTTP #################################
-# This header sets the HTTP request's mimetype to `application/json`. This
-# means the payload of the HTTP message will be formatted as a json ojbect
-hdr = {
-    'Content-Type': 'application/json',
-    'Authorization': None #not using HTTP secure
-}
-
-
 
 # MQTT variables
 broker_hostname = "eclipse.usc.edu"
@@ -31,11 +17,13 @@ ranger2_dist = []
 def ranger1_callback(client, userdata, msg):
     global ranger1_dist
     ranger1_dist.append(int(msg.payload))
+    #truncate list to only have the last MAX_LIST_LENGTH values
     ranger1_dist = ranger1_dist[-MAX_LIST_LENGTH:]
 
 def ranger2_callback(client, userdata, msg):
     global ranger2_dist
     ranger2_dist.append(int(msg.payload))
+    #truncate list to only have the last MAX_LIST_LENGTH values
     ranger2_dist = ranger2_dist[-MAX_LIST_LENGTH:]
 
 # The callback for when the client receives a CONNACK response from the server.
@@ -53,19 +41,12 @@ def on_message(client, userdata, msg):
 
 
 ########################## SIGNAL PROCESSING ############################
-MAX_BUF_LEN = 10 # the number of values sitting in the moving average 
-                 # and delta buffers
+MAX_BUF_LEN = 10
 ranger1_movAvg = []
 ranger2_movAvg = []
 
-# builds moving average buffers for each ranger
-# adds up total of last MAX_BUF_LEN values in distance buffer,
-# divides the total by MAX_BUF_LEN to find the average
-# and appends is value to the moving average buffer
-def smoother():
-
+def smoother1():
     global ranger1_movAvg
-    global ranger2_movAvg
     tot = 0
     for val in ranger1_dist[-MAX_BUF_LEN:]:
         tot += int(val)
@@ -76,6 +57,8 @@ def smoother():
     #truncate list to only have the last MAX_BUF_LEN values
     ranger1_movAvg = ranger1_movAvg[-MAX_BUF_LEN:]
 
+def smoother2():
+    global ranger2_movAvg
     tot = 0
     for val in ranger2_dist[-MAX_BUF_LEN:]:
         tot += int(val)
@@ -85,14 +68,13 @@ def smoother():
 
     #truncate list to only have the last MAX_BUF_LEN values
     ranger2_movAvg = ranger2_movAvg[-MAX_BUF_LEN:]
-    
 
 ranger1_deltas = []
 ranger2_deltas = []
 
 # takes last two values in each moving average array and creates an array of 
-# differences between each value 
-# (so for example: 20 movAvg values, we get 10 delta values)
+# differences between each value (so for 20 movAvg values, we get 10 delta values)
+# may change this and have function only return the two transient deltas
 def delta():
     global ranger1_deltas
     global ranger2_deltas
@@ -108,43 +90,10 @@ def delta():
     ranger2_deltas.append(delta2)
     ranger2_deltas = ranger2_deltas[-MAX_BUF_LEN:]
 
-# stateMachine() is where the moving average and delta bufffers are analized
-# to determine the behavior of the subject
 def stateMachine():
-    #################################### HTTP ################################3
-    # payload definitions for all motion options
-    # this must be defined each time stateMachine() is called
-    # so we can grab the correct timestamp
-    pload_mvRight = {
-        'time': str(datetime.now()),
-        'event': "Moving - Right"
-    }
-    pload_mvLeft = {
-        'time': str(datetime.now()),
-        'event': "Moving - Left"
-    }
-    pload_stRight = {
-        'time': str(datetime.now()),
-        'event': "Still - Right"
-    }
-    pload_stLeft = {
-        'time': str(datetime.now()),
-        'event': "Still - Left"
-    }
-    pload_stMiddle = {
-        'time': str(datetime.now()),
-        'event': "Still - Middle"
-    }
-    pload_noBody = {
-        'time': str(datetime.now()),
-        'event': "No Body Present"
-    }
-
-    # buffer for sensor error
-    distance_buf = 20
+    # buffers for sensor error
+    distance_buf = 10
     # grab last elements and cast to integers
-    # we put the values into dump_list because grabbing value
-    # list[-1:] returns a list, and cannot be cast to an integer
     dump_list = (ranger1_deltas[-1:] + ranger2_deltas[-1:] + 
                 ranger1_movAvg[-1:] + ranger2_movAvg[-1:])
     delta1 = int(dump_list[0])
@@ -152,46 +101,17 @@ def stateMachine():
     ranger1 = int(dump_list[2])
     ranger2 = int(dump_list[3])
     
-    ############################ LOGIC ##############################
-    # here we will decide if a person is moving left or right, standing
-    # in the left, right, or middle sections of the test area
-    # or is not present in the test area at all
-    # presence is determined by whether or not the user is within 
-    # the max_dist defined below
-    max_dist = 150
     #STILL CONDITION
-    if ((ranger1 > max_dist) and (ranger2 > max_dist)):
-        print("No Body Present")
-        response = requests.post("http://0.0.0.0:5000/post-event", headers = hdr,
-                                 data = json.dumps(pload_noBody))
-    elif ((delta1 is 0) and (delta2 is 0)):
+    if ((delta1 is 0) and (delta2 is 0)):
         # IF STILL AND LEFT
         if(ranger2 > ranger1 + distance_buf):
             print("Motion: STILL, Position: LEFT")
-            response = requests.post("http://0.0.0.0:5000/post-event", headers = hdr,
-                                 data = json.dumps(pload_stLeft))
         # IF STILL AND RIGHT
         elif(ranger2 + distance_buf < ranger1):
-            print("Motion: STILL, Position: RIGHT")
-            response = requests.post("http://0.0.0.0:5000/post-event", headers = hdr,
-                                 data = json.dumps(pload_stRight))
+            print("Motion: STILL, Position: LEFT")
         else:
             print("Motion: STILL, Position: MIDDLE")
-            response = requests.post("http://0.0.0.0:5000/post-event", headers = hdr,
-                                 data = json.dumps(pload_stMiddle))
-            
-    # MOVING CONDITION
-    else:
-        # IF MOVING RIGHT
-        if ((delta1 > 0) and (delta2 < 0)):
-            print("Motion: MOVING, Direction: LEFT")
-            response = requests.post("http://0.0.0.0:5000/post-event", headers = hdr,
-                                 data = json.dumps(pload_mvLeft))
-        # IF MOVING LEFT
-        elif ((delta1 < 0) and (delta2 > 0)):
-            print("Motion: MOVING, Direction: RIGHT")
-            response = requests.post("http://0.0.0.0:5000/post-event", headers = hdr,
-                                 data = json.dumps(pload_mvRight))
+    # elif((delta1 is 0) and (delta2 is 0)):
 
 
 if __name__ == '__main__':
@@ -206,8 +126,6 @@ if __name__ == '__main__':
     ranger1_movAvg = []
     ranger2_movAvg = []
 
-
-
     while True:
         """ You have two lists, ranger1_dist and ranger2_dist, which hold a window
         of the past MAX_LIST_LENGTH samples published by ultrasonic ranger 1
@@ -217,13 +135,12 @@ if __name__ == '__main__':
         0 and 512. However, these rangers do not detect people well beyond 
         ~125cm. """
 
-        # calculate moving average
-        smoother()
-        
-        # calculate velocity
-        delta()
+        # print("ranger1: " + str(ranger1_dist[-1:]) + ", ranger2: " + 
+            # str(ranger2_dist[-1:])) 
 
-        # perform logic to determin subject behavior
-        stateMachine()
-     
+        # build moving average lists
+
+        print("ranger1: " + str(ranger1_dist[-1:]) + ", ranger2: " + 
+            str(ranger2_dist[-1:])) 
+        
         time.sleep(0.2)
