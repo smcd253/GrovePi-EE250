@@ -92,7 +92,7 @@ def delta():
 
 def stateMachine():
     # buffers for sensor error
-    distance_buf = 10
+    distance_buf = 20
     # grab last elements and cast to integers
     dump_list = (ranger1_deltas[-1:] + ranger2_deltas[-1:] + 
                 ranger1_movAvg[-1:] + ranger2_movAvg[-1:])
@@ -102,16 +102,26 @@ def stateMachine():
     ranger2 = int(dump_list[3])
     
     #STILL CONDITION
-    if ((delta1 is 0) and (delta2 is 0)):
+    if ((ranger1 > 250) or (ranger2 > 250)):
+        print("No Body Present")
+    elif ((delta1 is 0) and (delta2 is 0)):
         # IF STILL AND LEFT
         if(ranger2 > ranger1 + distance_buf):
             print("Motion: STILL, Position: LEFT")
         # IF STILL AND RIGHT
         elif(ranger2 + distance_buf < ranger1):
-            print("Motion: STILL, Position: LEFT")
+            print("Motion: STILL, Position: RIGHT")
         else:
             print("Motion: STILL, Position: MIDDLE")
-    # elif((delta1 is 0) and (delta2 is 0)):
+            
+    # MOVING CONDITION
+    else:
+        # IF MOVING RIGHT
+        if ((delta1 > 0) and (delta2 < 0)):
+            print("Motion: MOVING, Direction: RIGHT")
+        # IF MOVING LEFT
+        elif ((delta1 < 0) and (delta2 > 0)):
+            print("Motion: MOVING, Direction: LEFT")
 
 
 if __name__ == '__main__':
@@ -122,12 +132,9 @@ if __name__ == '__main__':
     client.connect(broker_hostname, broker_port, 60)
     client.loop_start()
 
-<<<<<<< HEAD
-=======
     # moving average buffers
     ranger1_movAvg = []
     ranger2_movAvg = []
->>>>>>> d028523ef13935c3f519dcf43ca00a8e2a9baf4c
 
     while True:
         """ You have two lists, ranger1_dist and ranger2_dist, which hold a window
@@ -142,7 +149,6 @@ if __name__ == '__main__':
             # str(ranger2_dist[-1:])) 
 
         # TODO: detect movement and/or position
-<<<<<<< HEAD
         # moving average
         smoother1()
         smoother2()
@@ -154,11 +160,9 @@ if __name__ == '__main__':
 
         stateMachine()
 
-=======
         # build moving average lists
 
-        print("ranger1: " + str(ranger1_dist[-1:]) + ", ranger2: " + 
-            str(ranger2_dist[-1:])) 
->>>>>>> d028523ef13935c3f519dcf43ca00a8e2a9baf4c
+        # print("ranger1: " + str(ranger1_dist[-1:]) + ", ranger2: " + 
+        #     str(ranger2_dist[-1:])) 
         
         time.sleep(0.2)
