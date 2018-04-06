@@ -170,16 +170,16 @@ def stateMachine():
     elif ((delta1 is 0) and (delta2 is 0)):
         # IF STILL AND LEFT
         if(ranger2 > ranger1 + distance_buf):
-            print("Motion: STILL, Position: LEFT")
+            print("Still - Left")
             response = requests.post("http://0.0.0.0:5000/post-event", headers = hdr,
                                  data = json.dumps(pload_stLeft))
         # IF STILL AND RIGHT
         elif(ranger2 + distance_buf < ranger1):
-            print("Motion: STILL, Position: RIGHT")
+            print("Still - Right")
             response = requests.post("http://0.0.0.0:5000/post-event", headers = hdr,
                                  data = json.dumps(pload_stRight))
         else:
-            print("Motion: STILL, Position: MIDDLE")
+            print("Still - Middle")
             response = requests.post("http://0.0.0.0:5000/post-event", headers = hdr,
                                  data = json.dumps(pload_stMiddle))
             
@@ -187,12 +187,12 @@ def stateMachine():
     else:
         # IF MOVING RIGHT
         if ((delta1 > 0) and (delta2 < 0)):
-            print("Motion: MOVING, Direction: LEFT")
+            print("Moving Left")
             response = requests.post("http://0.0.0.0:5000/post-event", headers = hdr,
                                  data = json.dumps(pload_mvLeft))
         # IF MOVING LEFT
         elif ((delta1 < 0) and (delta2 > 0)):
-            print("Motion: MOVING, Direction: RIGHT")
+            print("Moving Right")
             response = requests.post("http://0.0.0.0:5000/post-event", headers = hdr,
                                  data = json.dumps(pload_mvRight))
 
