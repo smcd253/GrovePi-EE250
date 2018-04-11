@@ -39,9 +39,9 @@ def on_message(client, userdata, msg):
 def led(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message 
     data = str(message.payload, "utf-8")
-    if ((data == "TOGGLE") and !digitalRead(LED)): #if receive message and LED is off
+    if ((data == "TOGGLE") and digitalRead(LED) == 0): #if receive message and LED is off
         digitalWrite(LED, 1) #turn LED on
-    elif ((data == "TOGGLE") and digitalRead(LED)): #if receive message and LED is on
+    elif ((data == "TOGGLE") and digitalRead(LED) == 1): #if receive message and LED is on
         digitalWrite(LED, 0) #turn LED off
 
 def lcd(client, userdata, message):
