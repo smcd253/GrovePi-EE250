@@ -37,9 +37,10 @@ def on_message(client, userdata, msg):
     print("on_message: " + msg.topic + " " + str(msg.payload, "utf-8"))
 
 def temperature(client, userdata, message):
-    
+    print()
 
 def humidity(client, userdata, message):
+    print()
 
 
 #Custom callbacks need to be structured with three args like on_message()
