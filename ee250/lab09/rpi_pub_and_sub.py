@@ -24,29 +24,18 @@ def on_connect(client, userdata, flags, rc):
     #subscribe to topics of interest here
     client.subscribe("anrg-pi9/defaultCallback")
     client.subscribe("anrg-pi9/temperature")
-    # client.message_callback_add("anrg-pi9/temperature", temperature)
     client.subscribe("anrg-pi9/humidity")
-    # client.message_callback_add("anrg-pi9/humidity", humidity)
     client.subscribe("anrg-pi9/led")
     client.message_callback_add("anrg-pi9/led", led)
     client.subscribe("anrg-pi9/lcd")
     client.message_callback_add("anrg-pi9/lcd", lcd)
-
-# #Default message callback. Please use custom callbacks.
-# def on_message(client, userdata, msg):
-#     print("on_message: " + msg.topic + " " + str(msg.payload, "utf-8"))
-
-# def temperature(client, userdata, message):
-#     print()
-
-# def humidity(client, userdata, message):
-#     print()
 
 
 #Custom callbacks need to be structured with three args like on_message()
 def led(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message 
     data = str(message.payload, "utf-8")
+    print(data)
     if ((data == "TOGGLE") and digitalRead(LED) == 0): #if receive message and LED is off
         digitalWrite(LED, 1) #turn LED on
     elif ((data == "TOGGLE") and digitalRead(LED) == 1): #if receive message and LED is on
@@ -54,6 +43,7 @@ def led(client, userdata, message):
 
 def lcd(client, userdata, message):
     data = str(message.payload, "utf-8")
+    print(data)
     print("From App: " + data)
     setRGB(64,0,128)   # parse our list into the color settings
     setText("From App: " + data) # update the RGB LCD display
@@ -70,12 +60,10 @@ if __name__ == '__main__':
 
     while True:
         ################ DHT ###############
-        try:
-            temp, hum = dht_sensor.feedMe() # try to read values
-            client.publish("anrg-pi9/temperature", temp)
-            client.publish("anrg-pi9/humidity", hum)
-        except KeyboardInterrupt:
-            dht_sensor.stop() # stop gathering data
+        temp, hum = dht_sensor.feedMe() # try to read values
+        client.publish("anrg-pi9/temperature", temp)
+        client.publish("anrg-pi9/humidity", hum)
+        print(temp, hum)
         time.sleep(1)
             
 
