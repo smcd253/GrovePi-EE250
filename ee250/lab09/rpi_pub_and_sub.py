@@ -61,7 +61,7 @@ if __name__ == '__main__':
     while True:
         ################ DHT ###############
         temp, hum = dht_sensor.feedMe() # try to read values
-        if ((temp is not None) and (hum is no None)):
+        if ((temp is not None) and (hum is not None)):
             client.publish("anrg-pi9/temperature", temp)
             client.publish("anrg-pi9/humidity", hum)
             print(temp, hum)
