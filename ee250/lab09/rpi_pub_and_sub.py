@@ -8,6 +8,7 @@ import time
 import grovepi
 from grovepi import *
 from grove_rgb_lcd import *
+from grove_dht import Dht
 
 # define grovepi vars
 dht_pin = 4
