@@ -27,8 +27,6 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("anrg-pi9/humidity")
     client.subscribe("anrg-pi9/led")
     client.message_callback_add("anrg-pi9/led", led)
-    client.subscribe("anrg-pi9/button")
-    client.message_callback_add("anrg-pi9/button", button)
     client.subscribe("anrg-pi9/lcd")
     client.message_callback_add("anrg-pi9/lcd", lcd)
 
