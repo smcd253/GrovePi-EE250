@@ -24,7 +24,9 @@ def on_connect(client, userdata, flags, rc):
     #subscribe to topics of interest here
     client.subscribe("anrg-pi9/defaultCallback")
     client.subscribe("anrg-pi9/temperature")
+    client.message_callback_add("anrg-pi9/temperature", temperature)
     client.subscribe("anrg-pi9/humidity")
+    client.message_callback_add("anrg-pi9/humidity", humidity)
     client.subscribe("anrg-pi9/led")
     client.message_callback_add("anrg-pi9/led", led)
     client.subscribe("anrg-pi9/lcd")
@@ -33,6 +35,12 @@ def on_connect(client, userdata, flags, rc):
 #Default message callback. Please use custom callbacks.
 def on_message(client, userdata, msg):
     print("on_message: " + msg.topic + " " + str(msg.payload, "utf-8"))
+
+def temperature(client, userdata, message):
+    
+
+def humidity(client, userdata, message):
+
 
 #Custom callbacks need to be structured with three args like on_message()
 def led(client, userdata, message):
