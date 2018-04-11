@@ -23,8 +23,8 @@ def on_connect(client, userdata, flags, rc):
 
     #subscribe to topics of interest here
     client.subscribe("anrg-pi9/defaultCallback")
-    client.subscribe("anrg-pi9/ultrasonic")
-    client.message_callback_add("anrg-pi9/ultrasonic", ultrasonic)
+    client.subscribe("anrg-pi9/temperature")
+    client.subscribe("anrg-pi9/humidity")
     client.subscribe("anrg-pi9/led")
     client.message_callback_add("anrg-pi9/led", led)
     client.subscribe("anrg-pi9/button")
