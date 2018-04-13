@@ -35,7 +35,6 @@ def on_connect(client, userdata, flags, rc):
 def led(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message 
     data = str(message.payload, "utf-8")
-    print(data)
     if ((data == "TOGGLE") and digitalRead(LED) == 0): #if receive message and LED is off
         digitalWrite(LED, 1) #turn LED on
     elif ((data == "TOGGLE") and digitalRead(LED) == 1): #if receive message and LED is on
@@ -43,8 +42,6 @@ def led(client, userdata, message):
 
 def lcd(client, userdata, message):
     data = str(message.payload, "utf-8")
-    print(data)
-    print("From App: " + data)
     setRGB(64,0,128)   # parse our list into the color settings
     setText("From App: " + data) # update the RGB LCD display
 
@@ -61,10 +58,6 @@ if __name__ == '__main__':
     while True:
         ################ DHT ###############
         temp, hum = dht_sensor.feedMe() # try to read values
-        if ((temp is not None) and (hum is not None)):
-            client.publish("anrg-pi9/temperature", temp)
-            client.publish("anrg-pi9/humidity", hum)
-            print(temp, hum)
+        client.publish("anrg-pi9/temperature", temp)
+        client.publish("anrg-pi9/humidity", hum)
         time.sleep(1)
-            
-
