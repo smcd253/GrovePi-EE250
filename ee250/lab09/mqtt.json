@@ -1,0 +1,45 @@
+{
+    "name": {
+      "en_US": "anrg-pi9"
+    },
+    "type": "MQTT",
+    "systemtype": "anrg-pi9",
+    "initdata": {
+      "port": 11000,
+      "host": "128.125.124.160"
+    },
+    "requests": {
+      "led": {
+        "request": {
+          "topic": "led"
+        },
+        "schema": {
+          "type": "String"
+        }
+      },
+      "temperature": {
+        "request": {
+          "topic": "temperature"
+        },
+        "schema": {
+          "type": "Number"
+        }
+      },
+      "humidity": {
+        "request": {
+          "topic": "humidity"
+        },
+        "schema": {
+          "type": "Number"
+        }
+      },
+      "message": {
+        "request": {
+          "topic": "message"
+        },
+        "schema": {
+          "type": "String"
+        }
+      }
+    }
+  }
